@@ -108,7 +108,7 @@
             display: none;
         }
 
-        .not-found {
+        .filter-not-found {
             padding: 3px;
             background: #f5f5f5;
             margin: 0 5px;
@@ -140,7 +140,7 @@
                     var $dropdownMenu = $('<div class="dropdown-menu"></div>');
                     var $filterContainer = $('<div class="filter-container"><input type="text" class="filter-input" placeholder="Search..."></div>');
                     var $actionButtons = $('<div class="action-buttons"><button class="select-all">Select All</button><button class="deselect-all">Deselect All</button></div>');
-                    var $notFoundMessage = $('<div class="not-found">No results matched "<span class="search-keyword"></span>"</div>');
+                    var $notFoundMessage = $('<div class="filter-not-found">No results matched "<span class="search-keyword"></span>"</div>');
 
                     function init() {
                         setupDropdown();
