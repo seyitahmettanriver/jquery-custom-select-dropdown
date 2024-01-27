@@ -21,25 +21,23 @@
             background-color: #f8f9fa;
         }
 
-        .custom-dropdown {
+        .custom-select-dropdown {
             position: relative;
             display: inline-block;
         }
 
-        .dropdown-toggle {
+        .custom-select-toggle {
             cursor: pointer;
             border: 1px solid #ccc;
             padding: 8px 16px;
             background-color: #fff;
             border-radius: 4px;
             color: #212529;
+            width: auto;
+            box-sizing: border-box;
         }
 
-        .dropdown-toggle:hover {
-            background-color: #e9ecef;
-        }
-
-        .dropdown-menu {
+        .custom-select-menu {
             display: none;
             position: absolute;
             background-color: #fff;
@@ -48,15 +46,22 @@
             padding: 0.5rem 0;
             z-index: 1000;
             border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        .dropdown-menu ul {
+        .custom-select-toggle:hover {
+            background-color: #e9ecef;
+        }
+
+
+        .custom-select-menu ul {
             list-style: none;
             margin: 0;
             padding: 0;
         }
 
-        .dropdown-menu li {
+        .custom-select-menu li {
             padding: 0.25rem 1rem;
             cursor: pointer;
             display: block;
@@ -65,11 +70,11 @@
             position: relative;
         }
 
-        .dropdown-menu li:hover {
+        .custom-select-menu li:hover {
             background-color: #e9ecef;
         }
 
-        .dropdown-menu li.active {
+        .custom-select-menu li.active {
             color: #fff;
             text-decoration: none;
             background-color: #007bff;
@@ -103,6 +108,11 @@
             flex: 1;
         }
 
+        .custom-select-container{
+            width: 500px;
+            position: relative;
+        }
+
         .action-buttons button.select-all,
         .action-buttons button.deselect-all {
             display: none;
@@ -130,14 +140,14 @@
     </style>
     <script>
         (function ($) {
-            $.fn.customDropdown = function () {
+            $.fn.customSelect = function () {
                 return this.each(function () {
                     var $selectBox = $(this);
                     var isMultiple = $selectBox.prop('multiple');
                     var isActionsBox = $selectBox.data('actions-box') === true;
                     var countSelectedText = $selectBox.data('count-selected-text');
-                    var $dropdownToggle = $('<div class="dropdown-toggle"></div>');
-                    var $dropdownMenu = $('<div class="dropdown-menu"></div>');
+                    var $dropdownToggle = $('<div class="custom-select-toggle"></div>');
+                    var $dropdownMenu = $('<div class="custom-select-menu"></div>');
                     var $filterContainer = $('<div class="filter-container"><input type="text" class="filter-input" placeholder="Search..."></div>');
                     var $actionButtons = $('<div class="action-buttons"><button class="select-all">Select All</button><button class="deselect-all">Deselect All</button></div>');
                     var $notFoundMessage = $('<div class="filter-not-found">No results matched "<span class="search-keyword"></span>"</div>');
@@ -150,19 +160,22 @@
 
                     function setupDropdown() {
                         $selectBox.hide();
+                        var $dropdownContainer = $('<div class="custom-select-container"></div>');
+
                         $dropdownToggle.html(getSelectedText() || 'Choose options');
-                        $selectBox.after($dropdownToggle);
-                        $dropdownToggle.after($dropdownMenu);
                         $dropdownMenu.prepend($filterContainer, $actionButtons);
 
                         buildDropdownOptions();
+                        $dropdownContainer.append($dropdownToggle, $dropdownMenu);
+                        $selectBox.after($dropdownContainer);
+
                         if (isMultiple && isActionsBox) {
                             $actionButtons.find('.select-all, .deselect-all').show();
                         } else {
                             $actionButtons.find('.select-all, .deselect-all').hide();
                         }
                     }
-
+                    
                     function buildDropdownOptions() {
                         $selectBox.find('option').each(function () {
                             var $option = $(this);
@@ -239,12 +252,10 @@
 
                     function toggleDropdownMenu() {
                         $dropdownMenu.toggle();
-
                         if ($filterContainer.find('.filter-input').is(':visible')) {
                             $filterContainer.find('.filter-input').focus();
                         }
                     }
-
                     function clearSearchInput() {
                         $filterContainer.find('.filter-input').val('');
                         filterOptions('');
@@ -269,14 +280,11 @@
                             $notFoundMessage.find('.search-keyword').text(searchTerm);
                             $dropdownMenu.append($notFoundMessage);
 
-                            // isActionsBox aktifse, actionButtons'ı gizleyelim
                             if (isActionsBox) {
                                 $actionButtons.hide();
                             }
                         } else {
                             $notFoundMessage.remove();
-
-                            // isActionsBox aktifse, actionButtons'ı gösterelim
                             if (isActionsBox) {
                                 $actionButtons.show();
                             }
@@ -326,7 +334,7 @@
         })(jQuery);
 
         $(document).ready(function () {
-            $('.selectpicker').customDropdown();
+            $('.selectpicker').customSelect();
         });
 
     </script>
@@ -342,8 +350,6 @@
     <option>BBQ Sauce</option>
     <option>Soy Sauce</option>
 </select>
-
-
 
 </body>
 </html>
