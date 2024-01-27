@@ -162,7 +162,7 @@
 
                         $customSelectContainer.append($dropdownToggle, $dropdownMenu);
                         $dropdownMenu.append($additionalContainer);
-                        
+
                         if (isSearch) {
                             $additionalContainer.append($filterContainer);
                         }
@@ -225,6 +225,9 @@
                     }
 
                     function handleOptionClick($option, $listItem) {
+                        if (!isMultiple) {
+                            $dropdownMenu.hide();
+                        }
                         if (isMultiple) {
                             $option.prop('selected', !$option.prop('selected'));
                             $listItem.toggleClass('selected', $option.prop('selected'));
