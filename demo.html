@@ -143,6 +143,8 @@
                     var countSelectedText = $selectBox.data('count-selected-text');
                     var $dropdownToggle = $('<div class="custom-select-toggle"></div>');
                     var $dropdownMenu = $('<div class="custom-select-menu"></div>');
+                    var $customSelectContainer = $('<div class="custom-select-container"></div>');
+                    var $additionalContainer = $('<div class="additional-container"></div>');
                     var $filterContainer = $('<div class="filter-container"><input type="text" class="filter-input" placeholder="' + texts.search + '"></div>');
                     var $actionButtons = $('<div class="action-buttons"><button class="select-all">' + texts.selectAll + '</button><button class="deselect-all">' + texts.deselectAll + '</button></div>');
                     var $notFoundMessage = $('<div class="filter-not-found">' + texts.noResults + ' "<span class="search-keyword"></span>"</div>');
@@ -155,24 +157,24 @@
 
                     function setupDropdown() {
                         $selectBox.hide();
-                        var $dropdownContainer = $('<div class="custom-select-container"></div>');
 
                         $dropdownToggle.html(getSelectedText() || texts.chooseOptions);
 
-
-                        $dropdownContainer.append($dropdownToggle, $dropdownMenu);
-                        $selectBox.after($dropdownContainer);
-
+                        $customSelectContainer.append($dropdownToggle, $dropdownMenu);
+                        $dropdownMenu.append($additionalContainer);
+                        
+                        if (isSearch) {
+                            $additionalContainer.append($filterContainer);
+                        }
                         if (isMultiple && isActionsBox) {
-                            $dropdownMenu.prepend($actionButtons);
+                            $additionalContainer.append($actionButtons);
                             $actionButtons.find('.select-all, .deselect-all').show();
                         }
-                        if (isSearch) {
-                            $dropdownMenu.prepend($filterContainer);
-                        }
+
+                        $selectBox.after($customSelectContainer);
+
                         buildDropdownOptions();
                     }
-
                     function buildDropdownOptions() {
                         $selectBox.find('option').each(function () {
                             var $option = $(this);
