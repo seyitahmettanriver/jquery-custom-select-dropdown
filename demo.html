@@ -1,48 +1,318 @@
-Certainly! Below is a sample README file for your custom dropdown plugin project. You can customize it further based on your specific details and preferences.
-
----
-
-# Custom Dropdown Plugin
-
-Enhance your web forms with a customizable and user-friendly dropdown plugin built with HTML, CSS, and jQuery.
-
-## Features
-
-- **Searchable Dropdown:** Easily search and filter options within the dropdown.
-- **Multiple Selection:** Supports multiple selection with a "Select All" and "Deselect All" option.
-- **Styling:** Customizable styles with support for various colors.
-
-## Usage
-
-1. Include the jQuery library in your HTML file.
-
-    ```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Custom Dropdown Plugin</title>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
-    ```
+    <style>
+        /* Renkler */
+        :root {
+            --primary: #007bff;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+        }
 
-2. Add the `customDropdown` plugin to your select elements.
+        /* Temel stiller */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+        }
 
-    ```html
-    <select class="selectpicker" data-count-selected-text="4" data-live-search="true" data-actions-box="true" multiple>
-        <!-- Options go here -->
-    </select>
-    ```
+        .custom-dropdown {
+            position: relative;
+            display: inline-block;
+        }
 
-3. Initialize the plugin in your JavaScript.
+        .dropdown-toggle {
+            cursor: pointer;
+            border: 1px solid #ccc;
+            padding: 8px 16px;
+            background-color: #fff;
+            border-radius: 4px;
+            color: #212529;
+            transition: background-color 0.3s ease;
+        }
 
-    ```html
+        .dropdown-toggle:hover {
+            background-color: #e9ecef;
+        }
+
+        .dropdown-menu {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ccc;
+            padding: 8px;
+            z-index: 1000;
+            border-radius: 4px;
+        }
+
+        .dropdown-menu ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .dropdown-menu li {
+            padding: 8px;
+            cursor: pointer;
+            position: relative;
+            transition: background-color 0.3s ease;
+        }
+
+        .dropdown-menu li:hover {
+            background-color: #e9ecef;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+
+        .action-buttons button {
+            padding: 8px 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 4px;
+            transition: background-color 0.3s ease;
+        }
+
+        .action-buttons button.select-all,
+        .action-buttons button.deselect-all {
+            display: none; /* Select multiple ve data-actions-box="true" yoksa başlangıçta gizle */
+        }
+
+        .action-buttons button.select-all {
+            background-color: var(--primary);
+            color: #fff;
+        }
+
+        .action-buttons button.deselect-all {
+            background-color: var(--danger);
+            color: #fff;
+        }
+
+        .action-buttons button.select-all:hover,
+        .action-buttons button.deselect-all:hover {
+            background-color: #0056b3;
+        }
+
+        .not-found {
+            margin-top: 8px;
+            color: var(--danger);
+        }
+
+        .tick:after {
+            content: '';
+            display: block;
+            width: 0.5em;
+            height: 1em;
+            border-style: solid;
+            border-width: 0 0.26em 0.26em 0;
+            -webkit-transform: rotate(45deg);
+            -ms-transform: rotate(45deg);
+            -o-transform: rotate(45deg);
+            transform: rotate(45deg);
+        }
+    </style>
     <script>
+        (function ($) {
+            $.fn.customDropdown = function () {
+                return this.each(function () {
+                    var $selectBox = $(this);
+                    var isMultiple = $selectBox.prop('multiple');
+                    var isActionsBox = $selectBox.data('actions-box') === true;
+                    var countSelectedText = $selectBox.data('count-selected-text');
+                    var $dropdownToggle = $('<div class="dropdown-toggle"></div>');
+                    var $dropdownMenu = $('<div class="dropdown-menu"></div>');
+                    var $searchInput = $('<input type="text" class="search-input" placeholder="Search...">');
+                    var $actionButtons = $('<div class="action-buttons"><button class="select-all">Select All</button><button class="deselect-all">Deselect All</button></div>');
+                    var $notFoundMessage = $('<div class="not-found">No results matched "<span class="search-keyword"></span>"</div>');
+
+                    function init() {
+                        setupDropdown();
+                        setupEventHandlers();
+                        updateDropdownText();
+                    }
+
+                    function setupDropdown() {
+                        $selectBox.hide();
+                        $dropdownToggle.html(getSelectedText() || 'Choose options');
+                        $selectBox.after($dropdownToggle);
+                        $dropdownToggle.after($dropdownMenu);
+                        $dropdownMenu.prepend($searchInput, $actionButtons);
+
+                        buildDropdownOptions();
+
+                        // Show/hide action buttons based on the dropdown type and isActionsBox flag
+                        if (isMultiple && isActionsBox) {
+                            $actionButtons.find('.select-all, .deselect-all').show();
+                        } else {
+                            $actionButtons.find('.select-all, .deselect-all').hide();
+                        }
+                    }
+
+                    function buildDropdownOptions() {
+                        $selectBox.find('option').each(function () {
+                            var $option = $(this);
+                            var $listItem = $('<li>' + $option.text() + '</li>');
+
+                            $listItem.on('click', function () {
+                                handleOptionClick($option, $listItem);
+                            });
+
+                            if ($option.prop('selected')) {
+                                $listItem.addClass('tick');
+                            }
+
+                            $dropdownMenu.append($listItem);
+                        });
+                    }
+
+                    function setupEventHandlers() {
+                        $searchInput.on('input', function () {
+                            filterOptions($(this).val());
+                        });
+
+                        $actionButtons.find('.select-all').on('click', function () {
+                            selectAllOptions();
+                            updateDropdownText();
+                        });
+
+                        $actionButtons.find('.deselect-all').on('click', function () {
+                            deselectAllOptions();
+                            updateDropdownText();
+                        });
+
+                        $dropdownToggle.on('click', function () {
+                            toggleDropdownMenu();
+                        });
+
+                        $(document).on('click', function (event) {
+                            handleDocumentClick(event);
+                        });
+
+                        $dropdownToggle.on('blur', function () {
+                            clearSearchInput();
+                        });
+                    }
+
+                    function handleOptionClick($option, $listItem) {
+                        if (isMultiple) {
+                            $option.prop('selected', !$option.prop('selected'));
+                            $listItem.toggleClass('tick', $option.prop('selected'));
+                        } else {
+                            $selectBox.val($option.val());
+                            $listItem.siblings().removeClass('tick');
+                            $listItem.addClass('tick');
+                        }
+
+                        updateDropdownText();
+                    }
+
+                    function handleDocumentClick(event) {
+                        if (
+                            !$dropdownToggle.is(event.target) &&
+                            !$dropdownMenu.is(event.target) &&
+                            $dropdownMenu.has(event.target).length === 0
+                        ) {
+                            $dropdownMenu.hide();
+                            clearSearchInput();
+                            filterOptions('');
+                        }
+                    }
+
+                    function toggleDropdownMenu() {
+                        $dropdownMenu.toggle();
+
+                        if ($searchInput.is(':visible')) {
+                            $searchInput.focus();
+                        }
+                    }
+
+                    function clearSearchInput() {
+                        $searchInput.val('');
+                        filterOptions('');
+                    }
+
+                    function updateDropdownText() {
+                        var selectedCount = getSelectedCount();
+                        var selectedText =
+                            selectedCount > countSelectedText ? selectedCount + ' selected' : getSelectedText();
+
+                        $dropdownToggle.text(selectedText || 'Choose options');
+                    }
+
+                    function getSelectedCount() {
+                        return $selectBox.find('option:selected').length;
+                    }
+
+                    function filterOptions(searchTerm) {
+                        var $filteredItems = $dropdownMenu.find('li:containsi(' + searchTerm + ')');
+
+                        if ($filteredItems.length === 0 && searchTerm !== '') {
+                            $notFoundMessage.find('.search-keyword').text(searchTerm);
+                            $dropdownMenu.append($notFoundMessage);
+                        } else {
+                            $notFoundMessage.remove();
+                        }
+
+                        $dropdownMenu.find('li').hide();
+                        $filteredItems.show();
+                    }
+
+                    function selectAllOptions() {
+                        $selectBox.find('option').prop('selected', true);
+                        $dropdownMenu.find('li').addClass('tick');
+                    }
+
+                    function deselectAllOptions() {
+                        $selectBox.find('option').prop('selected', false);
+                        $dropdownMenu.find('li').removeClass('tick');
+                    }
+
+                    function getSelectedText() {
+                        var selectedOptions = $selectBox.find('option:selected');
+                        return selectedOptions
+                            .map(function () {
+                                return $(this).text();
+                            })
+                            .get()
+                            .join(', ');
+                    }
+
+                    $.expr[":"].containsi = $.expr.createPseudo(function (arg) {
+                        return function (elem) {
+                            return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+                        };
+                    });
+
+                    init();
+                });
+            };
+        })(jQuery);
+
         $(document).ready(function () {
             $('.selectpicker').customDropdown();
         });
     </script>
-    ```
+</head>
+<body>
 
-## Examples
-
-### Example 1
-
-```html
 <select class="selectpicker" data-count-selected-text="4" data-live-search="true" data-actions-box="true" multiple>
     <option selected>Example</option>
     <option selected>Ketchup</option>
@@ -52,11 +322,7 @@ Enhance your web forms with a customizable and user-friendly dropdown plugin bui
     <option>BBQ Sauce</option>
     <option>Soy Sauce</option>
 </select>
-```
 
-### Example 2
-
-```html
 <select class="selectpicker" data-count-selected-text="2" data-live-search="true" data-actions-box="true" multiple>
     <option selected>Terst</option>
     <option selected>Ketchup</option>
@@ -66,14 +332,6 @@ Enhance your web forms with a customizable and user-friendly dropdown plugin bui
     <option>BBQ Sauce</option>
     <option>Soy Sauce</option>
 </select>
-```
 
-Feel free to customize the plugin according to your project needs. Contributions and suggestions are welcome!
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
----
-
-Replace the placeholders such as "Options go here" with specific details about your dropdown options, and modify the examples accordingly. This README provides a basic structure; you can expand it to include more details, such as installation instructions, customization options, and any other relevant information.
+</body>
+</html>
