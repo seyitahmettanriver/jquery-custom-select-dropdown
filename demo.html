@@ -61,11 +61,21 @@
             padding: 8px;
             cursor: pointer;
             position: relative;
-            transition: background-color 0.3s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            list-style: none;
         }
 
         .dropdown-menu li:hover {
             background-color: #e9ecef;
+        }
+
+        .dropdown-menu li.active {
+            color: #fff;
+            text-decoration: none;
+            background-color: #007bff;
         }
 
         .search-input {
@@ -93,7 +103,7 @@
 
         .action-buttons button.select-all,
         .action-buttons button.deselect-all {
-            display: none; /* Select multiple ve data-actions-box="true" yoksa başlangıçta gizle */
+            display: none;
         }
 
         .action-buttons button.select-all {
@@ -115,8 +125,7 @@
             margin-top: 8px;
             color: var(--danger);
         }
-
-        .tick:after {
+        .selected:after {
             content: '';
             display: block;
             width: 0.5em;
@@ -176,7 +185,11 @@
                             });
 
                             if ($option.prop('selected')) {
-                                $listItem.addClass('tick');
+                                if (isMultiple) {
+                                    $listItem.addClass('selected');
+                                } else {
+                                    $listItem.addClass('active');
+                                }
                             }
 
                             $dropdownMenu.append($listItem);
@@ -214,11 +227,11 @@
                     function handleOptionClick($option, $listItem) {
                         if (isMultiple) {
                             $option.prop('selected', !$option.prop('selected'));
-                            $listItem.toggleClass('tick', $option.prop('selected'));
+                            $listItem.toggleClass('selected', $option.prop('selected'));
                         } else {
                             $selectBox.val($option.val());
-                            $listItem.siblings().removeClass('tick');
-                            $listItem.addClass('tick');
+                            $listItem.siblings().removeClass('active');
+                            $listItem.addClass('active');
                         }
 
                         updateDropdownText();
@@ -277,12 +290,20 @@
 
                     function selectAllOptions() {
                         $selectBox.find('option').prop('selected', true);
-                        $dropdownMenu.find('li').addClass('tick');
+                        if (isMultiple){
+                            $dropdownMenu.find('li').addClass('selected');
+                        } else {
+                            $dropdownMenu.find('li').addClass('active');
+                        }
                     }
 
                     function deselectAllOptions() {
                         $selectBox.find('option').prop('selected', false);
-                        $dropdownMenu.find('li').removeClass('tick');
+                        if (isMultiple){
+                            $dropdownMenu.find('li').removeClass('selected');
+                        } else {
+                            $dropdownMenu.find('li').removeClass('active');
+                        }
                     }
 
                     function getSelectedText() {
@@ -323,15 +344,7 @@
     <option>Soy Sauce</option>
 </select>
 
-<select class="selectpicker" data-count-selected-text="2" data-live-search="true" data-actions-box="true" multiple>
-    <option selected>Terst</option>
-    <option selected>Ketchup</option>
-    <option>Relish</option>
-    <option>Mayonnaise</option>
-    <option>Hot Sauce</option>
-    <option>BBQ Sauce</option>
-    <option>Soy Sauce</option>
-</select>
+
 
 </body>
 </html>
