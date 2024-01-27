@@ -145,6 +145,7 @@
                     var $dropdownMenu = $('<div class="custom-select-menu"></div>');
                     var $customSelectContainer = $('<div class="custom-select-container"></div>');
                     var $additionalContainer = $('<div class="additional-container"></div>');
+                    var $itemContainer = $('<ul class="item-container"></ul>');
                     var $filterContainer = $('<div class="filter-container"><input type="text" class="filter-input" placeholder="' + texts.search + '"></div>');
                     var $actionButtons = $('<div class="action-buttons"><button class="select-all">' + texts.selectAll + '</button><button class="deselect-all">' + texts.deselectAll + '</button></div>');
                     var $notFoundMessage = $('<div class="filter-not-found">' + texts.noResults + ' "<span class="search-keyword"></span>"</div>');
@@ -191,8 +192,8 @@
                                     $listItem.addClass('active');
                                 }
                             }
-
-                            $dropdownMenu.append($listItem);
+                            $itemContainer.append($listItem);
+                            $dropdownMenu.append($itemContainer);
                         });
                     }
 
