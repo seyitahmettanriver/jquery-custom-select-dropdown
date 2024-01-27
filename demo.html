@@ -113,11 +113,6 @@
             position: relative;
         }
 
-        .action-buttons button.select-all,
-        .action-buttons button.deselect-all {
-            display: none;
-        }
-
         .filter-not-found {
             padding: 3px;
             background: #f5f5f5;
@@ -145,6 +140,7 @@
                     var $selectBox = $(this);
                     var isMultiple = $selectBox.prop('multiple');
                     var isActionsBox = $selectBox.data('actions-box') === true;
+                    var isSearch = $selectBox.data('live-search') === true;
                     var countSelectedText = $selectBox.data('count-selected-text');
                     var $dropdownToggle = $('<div class="custom-select-toggle"></div>');
                     var $dropdownMenu = $('<div class="custom-select-menu"></div>');
@@ -163,19 +159,21 @@
                         var $dropdownContainer = $('<div class="custom-select-container"></div>');
 
                         $dropdownToggle.html(getSelectedText() || 'Choose options');
-                        $dropdownMenu.prepend($filterContainer, $actionButtons);
 
-                        buildDropdownOptions();
+
                         $dropdownContainer.append($dropdownToggle, $dropdownMenu);
                         $selectBox.after($dropdownContainer);
 
                         if (isMultiple && isActionsBox) {
+                            $dropdownMenu.prepend($actionButtons);
                             $actionButtons.find('.select-all, .deselect-all').show();
-                        } else {
-                            $actionButtons.find('.select-all, .deselect-all').hide();
                         }
+                        if (isSearch) {
+                            $dropdownMenu.prepend($filterContainer);
+                        }
+                        buildDropdownOptions();
                     }
-                    
+
                     function buildDropdownOptions() {
                         $selectBox.find('option').each(function () {
                             var $option = $(this);
@@ -341,7 +339,7 @@
 </head>
 <body>
 
-<select class="selectpicker" data-count-selected-text="4" data-live-search="true" data-actions-box="true" multiple>
+<select class="selectpicker" data-count-selected-text="5" data-live-search="true" data-actions-box="true" multiple>
     <option selected>Example</option>
     <option selected>Ketchup</option>
     <option selected>Relish</option>
@@ -350,6 +348,9 @@
     <option>BBQ Sauce</option>
     <option>Soy Sauce</option>
 </select>
+
+
+
 
 </body>
 </html>
