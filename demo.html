@@ -6,21 +6,10 @@
     <title>Custom Dropdown Plugin</title>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
     <style>
-        /* Renkler */
-        :root {
-            --primary: #007bff;
-            --success: #28a745;
-            --danger: #dc3545;
-            --warning: #ffc107;
-            --info: #17a2b8;
-        }
-
-        /* Temel stiller */
         body {
             font-family: Arial, sans-serif;
             background-color: #f8f9fa;
         }
-
         .custom-select-dropdown {
             position: relative;
             display: inline-block;
@@ -138,15 +127,25 @@
             $.fn.customSelect = function () {
                 return this.each(function () {
                     var $selectBox = $(this);
+
+                    var texts = {
+                        chooseOptions: $selectBox.data('text-choose-options') || 'Choose options',
+                        noResults: $selectBox.data('text-no-results') || 'No results matched',
+                        deselectAll: $selectBox.data('text-deselect-all') || 'Deselect All',
+                        selectAll: $selectBox.data('text-select-all') || 'Select All',
+                        search: $selectBox.data('text-search') || 'Search...',
+                        itemSelected: $selectBox.data('text-items-selected') || 'items selected'
+                    };
+
                     var isMultiple = $selectBox.prop('multiple');
                     var isActionsBox = $selectBox.data('actions-box') === true;
                     var isSearch = $selectBox.data('live-search') === true;
                     var countSelectedText = $selectBox.data('count-selected-text');
                     var $dropdownToggle = $('<div class="custom-select-toggle"></div>');
                     var $dropdownMenu = $('<div class="custom-select-menu"></div>');
-                    var $filterContainer = $('<div class="filter-container"><input type="text" class="filter-input" placeholder="Search..."></div>');
-                    var $actionButtons = $('<div class="action-buttons"><button class="select-all">Select All</button><button class="deselect-all">Deselect All</button></div>');
-                    var $notFoundMessage = $('<div class="filter-not-found">No results matched "<span class="search-keyword"></span>"</div>');
+                    var $filterContainer = $('<div class="filter-container"><input type="text" class="filter-input" placeholder="' + texts.search + '"></div>');
+                    var $actionButtons = $('<div class="action-buttons"><button class="select-all">' + texts.selectAll + '</button><button class="deselect-all">' + texts.deselectAll + '</button></div>');
+                    var $notFoundMessage = $('<div class="filter-not-found">' + texts.noResults + ' "<span class="search-keyword"></span>"</div>');
 
                     function init() {
                         setupDropdown();
@@ -158,7 +157,7 @@
                         $selectBox.hide();
                         var $dropdownContainer = $('<div class="custom-select-container"></div>');
 
-                        $dropdownToggle.html(getSelectedText() || 'Choose options');
+                        $dropdownToggle.html(getSelectedText() || texts.chooseOptions);
 
 
                         $dropdownContainer.append($dropdownToggle, $dropdownMenu);
@@ -262,9 +261,9 @@
                     function updateDropdownText() {
                         var selectedCount = getSelectedCount();
                         var selectedText =
-                            selectedCount > countSelectedText ? selectedCount + ' selected' : getSelectedText();
+                            selectedCount > countSelectedText ? selectedCount + ' ' + texts.itemSelected : getSelectedText();
 
-                        $dropdownToggle.text(selectedText || 'Choose options');
+                        $dropdownToggle.text(selectedText || texts.chooseOptions);
                     }
 
                     function getSelectedCount() {
@@ -339,7 +338,14 @@
 </head>
 <body>
 
-<select class="selectpicker" data-count-selected-text="5" data-live-search="true" data-actions-box="true" multiple>
+<select class="selectpicker" data-count-selected-text="5" data-live-search="true" data-actions-box="true"
+        data-text-choose-options="Custom Choose Options"
+        data-text-no-results="Custom No Results"
+        data-text-deselect-all="Custom Deselect All"
+        data-text-select-all="Custom Select All"
+        data-text-search="Custom Search..."
+        data-text-items-selected="Custom items Selected"
+        multiple>
     <option selected>Example</option>
     <option selected>Ketchup</option>
     <option selected>Relish</option>
@@ -348,9 +354,6 @@
     <option>BBQ Sauce</option>
     <option>Soy Sauce</option>
 </select>
-
-
-
 
 </body>
 </html>
