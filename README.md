@@ -4,7 +4,6 @@ This custom dropdown plugin is a jQuery extension designed with flexibility in m
 
 ## Features
 
-- **Customizable Colors**: You can change theme colors by using variables defined in the `:root` element.
 - **Search Functionality**: Easily filter options in the dropdown menu with the live search feature.
 - **Multiple Selection Support**: Allows for selecting multiple options or a single option.
 - **Actions Box**: The actions box enables quick actions like selecting all options or clearing selections.
