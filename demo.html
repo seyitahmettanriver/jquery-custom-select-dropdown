@@ -33,7 +33,6 @@
             background-color: #fff;
             border-radius: 4px;
             color: #212529;
-            transition: background-color 0.3s ease;
         }
 
         .dropdown-toggle:hover {
@@ -46,7 +45,7 @@
             background-color: #fff;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             border: 1px solid #ccc;
-            padding: 8px;
+            padding: 0.5rem 0;
             z-index: 1000;
             border-radius: 4px;
         }
@@ -58,14 +57,12 @@
         }
 
         .dropdown-menu li {
-            padding: 8px;
+            padding: 0.25rem 1rem;
             cursor: pointer;
-            position: relative;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-
+            display: block;
             list-style: none;
+            user-select: none;
+            position: relative;
         }
 
         .dropdown-menu li:hover {
@@ -77,11 +74,13 @@
             text-decoration: none;
             background-color: #007bff;
         }
+        .filter-container{
+            padding: 4px 8px;
+        }
 
-        .search-input {
+        .filter-container .filter-input {
             width: 100%;
             padding: 8px;
-            margin-bottom: 8px;
             box-sizing: border-box;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -90,15 +89,18 @@
         .action-buttons {
             display: flex;
             justify-content: space-between;
-            margin-top: 8px;
+            padding: 4px 8px;
+            gap: 5px;
         }
 
         .action-buttons button {
-            padding: 8px 16px;
             cursor: pointer;
             border: none;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
+            padding: 0.25rem 0.5rem;
+            font-size: .875rem;
+            line-height: 1.5;
+            border-radius: 0.2rem;
+            flex: 1;
         }
 
         .action-buttons button.select-all,
@@ -106,36 +108,24 @@
             display: none;
         }
 
-        .action-buttons button.select-all {
-            background-color: var(--primary);
-            color: #fff;
-        }
-
-        .action-buttons button.deselect-all {
-            background-color: var(--danger);
-            color: #fff;
-        }
-
-        .action-buttons button.select-all:hover,
-        .action-buttons button.deselect-all:hover {
-            background-color: #0056b3;
-        }
-
         .not-found {
-            margin-top: 8px;
-            color: var(--danger);
+            padding: 3px;
+            background: #f5f5f5;
+            margin: 0 5px;
+            white-space: nowrap;
         }
         .selected:after {
             content: '';
-            display: block;
             width: 0.5em;
             height: 1em;
             border-style: solid;
             border-width: 0 0.26em 0.26em 0;
             -webkit-transform: rotate(45deg);
-            -ms-transform: rotate(45deg);
-            -o-transform: rotate(45deg);
-            transform: rotate(45deg);
+            -ms-transform: rotate(45deg) scale(0.75);
+            -o-transform: rotate(45deg) scale(0.75);
+            transform: rotate(45deg) scale(0.75);
+            position: absolute;
+            right: 16px;
         }
     </style>
     <script>
@@ -148,7 +138,7 @@
                     var countSelectedText = $selectBox.data('count-selected-text');
                     var $dropdownToggle = $('<div class="dropdown-toggle"></div>');
                     var $dropdownMenu = $('<div class="dropdown-menu"></div>');
-                    var $searchInput = $('<input type="text" class="search-input" placeholder="Search...">');
+                    var $filterContainer = $('<div class="filter-container"><input type="text" class="filter-input" placeholder="Search..."></div>');
                     var $actionButtons = $('<div class="action-buttons"><button class="select-all">Select All</button><button class="deselect-all">Deselect All</button></div>');
                     var $notFoundMessage = $('<div class="not-found">No results matched "<span class="search-keyword"></span>"</div>');
 
@@ -163,11 +153,9 @@
                         $dropdownToggle.html(getSelectedText() || 'Choose options');
                         $selectBox.after($dropdownToggle);
                         $dropdownToggle.after($dropdownMenu);
-                        $dropdownMenu.prepend($searchInput, $actionButtons);
+                        $dropdownMenu.prepend($filterContainer, $actionButtons);
 
                         buildDropdownOptions();
-
-                        // Show/hide action buttons based on the dropdown type and isActionsBox flag
                         if (isMultiple && isActionsBox) {
                             $actionButtons.find('.select-all, .deselect-all').show();
                         } else {
@@ -197,7 +185,7 @@
                     }
 
                     function setupEventHandlers() {
-                        $searchInput.on('input', function () {
+                        $filterContainer.find('.filter-input').on('input', function () {
                             filterOptions($(this).val());
                         });
 
@@ -252,13 +240,13 @@
                     function toggleDropdownMenu() {
                         $dropdownMenu.toggle();
 
-                        if ($searchInput.is(':visible')) {
-                            $searchInput.focus();
+                        if ($filterContainer.find('.filter-input').is(':visible')) {
+                            $filterContainer.find('.filter-input').focus();
                         }
                     }
 
                     function clearSearchInput() {
-                        $searchInput.val('');
+                        $filterContainer.find('.filter-input').val('');
                         filterOptions('');
                     }
 
@@ -280,8 +268,18 @@
                         if ($filteredItems.length === 0 && searchTerm !== '') {
                             $notFoundMessage.find('.search-keyword').text(searchTerm);
                             $dropdownMenu.append($notFoundMessage);
+
+                            // isActionsBox aktifse, actionButtons'ı gizleyelim
+                            if (isActionsBox) {
+                                $actionButtons.hide();
+                            }
                         } else {
                             $notFoundMessage.remove();
+
+                            // isActionsBox aktifse, actionButtons'ı gösterelim
+                            if (isActionsBox) {
+                                $actionButtons.show();
+                            }
                         }
 
                         $dropdownMenu.find('li').hide();
@@ -290,7 +288,7 @@
 
                     function selectAllOptions() {
                         $selectBox.find('option').prop('selected', true);
-                        if (isMultiple){
+                        if (isMultiple) {
                             $dropdownMenu.find('li').addClass('selected');
                         } else {
                             $dropdownMenu.find('li').addClass('active');
@@ -299,7 +297,7 @@
 
                     function deselectAllOptions() {
                         $selectBox.find('option').prop('selected', false);
-                        if (isMultiple){
+                        if (isMultiple) {
                             $dropdownMenu.find('li').removeClass('selected');
                         } else {
                             $dropdownMenu.find('li').removeClass('active');
@@ -330,6 +328,7 @@
         $(document).ready(function () {
             $('.selectpicker').customDropdown();
         });
+
     </script>
 </head>
 <body>
