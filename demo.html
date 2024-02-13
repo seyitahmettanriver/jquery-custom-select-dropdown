@@ -14,6 +14,7 @@
             position: relative;
             display: inline-block;
         }
+    
 
         .custom-select-toggle {
             cursor: pointer;
@@ -62,6 +63,28 @@
         .custom-select-menu li:hover {
             background-color: #e9ecef;
         }
+
+        
+.custom-select-menu li {
+    display: flex;
+    align-items: center; /* Öğeleri dikeyde hizalar */
+    padding: 0.25rem 1rem;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    position: relative;
+}
+
+.custom-select-menu li img {
+    width: 30px; /* Resmin genişliği */
+    height: 30px; /* Resmin yüksekliği */
+    margin-right: 10px; /* Resmin sağ taraftan boşluk bırakması */
+    border-radius: 50%; /* Yuvarlatılmış kenarlar */
+}
+
+.custom-select-menu li:hover {
+    background-color: #e9ecef; /* Fare üzerine gelindiğinde arkaplan rengi */
+}
 
         .custom-select-menu li.active {
             color: #fff;
@@ -176,26 +199,33 @@
 
                         buildDropdownOptions();
                     }
-                    function buildDropdownOptions() {
-                        $selectBox.find('option').each(function () {
-                            var $option = $(this);
-                            var $listItem = $('<li>' + $option.text() + '</li>');
-
-                            $listItem.on('click', function () {
-                                handleOptionClick($option, $listItem);
-                            });
-
-                            if ($option.prop('selected')) {
-                                if (isMultiple) {
-                                    $listItem.addClass('selected');
-                                } else {
-                                    $listItem.addClass('active');
-                                }
-                            }
-                            $itemContainer.append($listItem);
-                            $dropdownMenu.append($itemContainer);
+                  function buildDropdownOptions() {
+                    $selectBox.find('option').each(function () {
+                        var $option = $(this);
+                        var $listItem = $('<li>' + $option.text() + '</li>');
+                
+                        // Eğer data-img özelliği tanımlıysa ve değeri boş değilse
+                        if ($option.data('img') && $option.data('img').trim() !== '') {
+                            var $img = $('<img src="' + $option.data('img') + '">');
+                            $listItem.prepend($img);
+                        }
+                
+                        $listItem.on('click', function () {
+                            handleOptionClick($option, $listItem);
                         });
-                    }
+                
+                        if ($option.prop('selected')) {
+                            if (isMultiple) {
+                                $listItem.addClass('selected');
+                            } else {
+                                $listItem.addClass('active');
+                            }
+                        }
+                        $itemContainer.append($listItem);
+                        $dropdownMenu.append($itemContainer);
+                    });
+                }
+
 
                     function setupEventHandlers() {
                         $filterContainer.find('.filter-input').on('input', function () {
@@ -356,8 +386,8 @@
     <option selected>Ketchup</option>
     <option selected>Relish</option>
     <option selected>Mayonnaise</option>
-    <option>Hot Sauce</option>
-    <option>BBQ Sauce</option>
+    <option data-img="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Flag_of_Cuba.svg/800px-Flag_of_Cuba.svg.png">Hot Sauce</option>
+    <option data-img="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Flag_of_Cuba.svg/800px-Flag_of_Cuba.svg.png">BBQ Sauce</option>
     <option>Soy Sauce</option>
 </select>
 
