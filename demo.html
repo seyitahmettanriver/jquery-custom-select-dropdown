@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,11 +11,11 @@
             font-family: Arial, sans-serif;
             background-color: #f8f9fa;
         }
+
         .custom-select-dropdown {
             position: relative;
             display: inline-block;
         }
-    
 
         .custom-select-toggle {
             cursor: pointer;
@@ -44,7 +45,6 @@
             background-color: #e9ecef;
         }
 
-
         .custom-select-menu ul {
             list-style: none;
             margin: 0;
@@ -64,34 +64,40 @@
             background-color: #e9ecef;
         }
 
-        
-.custom-select-menu li {
-    display: flex;
-    align-items: center; /* Öğeleri dikeyde hizalar */
-    padding: 0.25rem 1rem;
-    cursor: pointer;
-    list-style: none;
-    user-select: none;
-    position: relative;
-}
+        .custom-select-menu li {
+            display: flex;
+            align-items: center;
+            /* Öğeleri dikeyde hizalar */
+            padding: 0.25rem 1rem;
+            cursor: pointer;
+            list-style: none;
+            user-select: none;
+            position: relative;
+        }
 
-.custom-select-menu li img {
-    width: 30px; /* Resmin genişliği */
-    height: 30px; /* Resmin yüksekliği */
-    margin-right: 10px; /* Resmin sağ taraftan boşluk bırakması */
-    border-radius: 50%; /* Yuvarlatılmış kenarlar */
-}
+        .custom-select-menu li img {
+            width: 30px;
+            /* Resmin genişliği */
+            height: 30px;
+            /* Resmin yüksekliği */
+            margin-right: 10px;
+            /* Resmin sağ taraftan boşluk bırakması */
+            border-radius: 50%;
+            /* Yuvarlatılmış kenarlar */
+        }
 
-.custom-select-menu li:hover {
-    background-color: #e9ecef; /* Fare üzerine gelindiğinde arkaplan rengi */
-}
+        .custom-select-menu li:hover {
+            background-color: #e9ecef;
+            /* Fare üzerine gelindiğinde arkaplan rengi */
+        }
 
         .custom-select-menu li.active {
             color: #fff;
             text-decoration: none;
             background-color: #007bff;
         }
-        .filter-container{
+
+        .filter-container {
             padding: 4px 8px;
         }
 
@@ -120,7 +126,7 @@
             flex: 1;
         }
 
-        .custom-select-container{
+        .custom-select-container {
             width: 500px;
             position: relative;
         }
@@ -131,6 +137,7 @@
             margin: 0 5px;
             white-space: nowrap;
         }
+
         .selected:after {
             content: '';
             width: 0.5em;
@@ -146,9 +153,9 @@
         }
     </style>
     <script>
-        (function ($) {
-            $.fn.customSelect = function () {
-                return this.each(function () {
+        (function($) {
+            $.fn.customSelect = function() {
+                return this.each(function() {
                     var $selectBox = $(this);
 
                     var texts = {
@@ -199,58 +206,59 @@
 
                         buildDropdownOptions();
                     }
-                  function buildDropdownOptions() {
-                    $selectBox.find('option').each(function () {
-                        var $option = $(this);
-                        var $listItem = $('<li>' + $option.text() + '</li>');
-                
-                        // Eğer data-img özelliği tanımlıysa ve değeri boş değilse
-                        if ($option.data('img') && $option.data('img').trim() !== '') {
-                            var $img = $('<img src="' + $option.data('img') + '">');
-                            $listItem.prepend($img);
-                        }
-                
-                        $listItem.on('click', function () {
-                            handleOptionClick($option, $listItem);
-                        });
-                
-                        if ($option.prop('selected')) {
-                            if (isMultiple) {
-                                $listItem.addClass('selected');
-                            } else {
-                                $listItem.addClass('active');
+
+                    function buildDropdownOptions() {
+                        $selectBox.find('option').each(function() {
+                            var $option = $(this);
+                            var $listItem = $('<li>' + $option.text() + '</li>');
+
+                            // Eğer data-img özelliği tanımlıysa ve değeri boş değilse
+                            if ($option.data('img') && $option.data('img').trim() !== '') {
+                                var $img = $('<img src="' + $option.data('img') + '">');
+                                $listItem.prepend($img);
                             }
-                        }
-                        $itemContainer.append($listItem);
-                        $dropdownMenu.append($itemContainer);
-                    });
-                }
+
+                            $listItem.on('click', function() {
+                                handleOptionClick($option, $listItem);
+                            });
+
+                            if ($option.prop('selected')) {
+                                if (isMultiple) {
+                                    $listItem.addClass('selected');
+                                } else {
+                                    $listItem.addClass('active');
+                                }
+                            }
+                            $itemContainer.append($listItem);
+                            $dropdownMenu.append($itemContainer);
+                        });
+                    }
 
 
                     function setupEventHandlers() {
-                        $filterContainer.find('.filter-input').on('input', function () {
+                        $filterContainer.find('.filter-input').on('input', function() {
                             filterOptions($(this).val());
                         });
 
-                        $actionButtons.find('.select-all').on('click', function () {
+                        $actionButtons.find('.select-all').on('click', function() {
                             selectAllOptions();
                             updateDropdownText();
                         });
 
-                        $actionButtons.find('.deselect-all').on('click', function () {
+                        $actionButtons.find('.deselect-all').on('click', function() {
                             deselectAllOptions();
                             updateDropdownText();
                         });
 
-                        $dropdownToggle.on('click', function () {
+                        $dropdownToggle.on('click', function() {
                             toggleDropdownMenu();
                         });
 
-                        $(document).on('click', function (event) {
+                        $(document).on('click', function(event) {
                             handleDocumentClick(event);
                         });
 
-                        $dropdownToggle.on('blur', function () {
+                        $dropdownToggle.on('blur', function() {
                             clearSearchInput();
                         });
                     }
@@ -272,8 +280,7 @@
                     }
 
                     function handleDocumentClick(event) {
-                        if (
-                            !$dropdownToggle.is(event.target) &&
+                        if (!$dropdownToggle.is(event.target) &&
                             !$dropdownMenu.is(event.target) &&
                             $dropdownMenu.has(event.target).length === 0
                         ) {
@@ -289,6 +296,7 @@
                             $filterContainer.find('.filter-input').focus();
                         }
                     }
+
                     function clearSearchInput() {
                         $filterContainer.find('.filter-input').val('');
                         filterOptions('');
@@ -348,15 +356,15 @@
                     function getSelectedText() {
                         var selectedOptions = $selectBox.find('option:selected');
                         return selectedOptions
-                            .map(function () {
+                            .map(function() {
                                 return $(this).text();
                             })
                             .get()
                             .join(', ');
                     }
 
-                    $.expr[":"].containsi = $.expr.createPseudo(function (arg) {
-                        return function (elem) {
+                    $.expr[":"].containsi = $.expr.createPseudo(function(arg) {
+                        return function(elem) {
                             return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
                         };
                     });
@@ -366,22 +374,16 @@
             };
         })(jQuery);
 
-        $(document).ready(function () {
+        $(document).ready(function() {
             $('.selectpicker').customSelect();
         });
-
     </script>
 </head>
+
 <body>
 
-<select class="selectpicker" data-count-selected-text="5" data-live-search="true" data-actions-box="true"
-        data-text-choose-options="Custom Choose Options"
-        data-text-no-results="Custom No Results"
-        data-text-deselect-all="Custom Deselect All"
-        data-text-select-all="Custom Select All"
-        data-text-search="Custom Search..."
-        data-text-items-selected="Custom items Selected"
-        multiple>
+    <select class="selectpicker" data-count-selected-text="5" data-live-search="true" data-actions-box="true" data-text-choose-options="Custom Choose Options" data-text-no-results="Custom No Results" data-text-deselect-all="Custom Deselect All" data-text-select-all="Custom Select All"
+        data-text-search="Custom Search..." data-text-items-selected="Custom items Selected" multiple>
     <option selected>Example</option>
     <option selected>Ketchup</option>
     <option selected>Relish</option>
@@ -392,4 +394,5 @@
 </select>
 
 </body>
+
 </html>
