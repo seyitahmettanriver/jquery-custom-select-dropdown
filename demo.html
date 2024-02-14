@@ -26,8 +26,13 @@
             color: #212529;
             width: auto;
             box-sizing: border-box;
+            display: flex; 
+            align-items: center; 
+            position: relative; 
         }
-
+        .custom-select-toggle .selected-image {
+            margin-right: 10px;
+        }
         .custom-select-menu {
             display: none;
             position: absolute;
@@ -306,8 +311,11 @@
                         var selectedCount = getSelectedCount();
                         var selectedText =
                             selectedCount > countSelectedText ? selectedCount + ' ' + texts.itemSelected : getSelectedText();
-
-                        $dropdownToggle.text(selectedText || texts.chooseOptions);
+                          
+                        var $selectedImages = $dropdownMenu.find('.selected img').clone(); 
+                        $selectedImages.addClass('selected-image');        
+            
+                        $dropdownToggle.empty().append($selectedImages, selectedText || texts.chooseOptions);
                     }
 
                     function getSelectedCount() {
