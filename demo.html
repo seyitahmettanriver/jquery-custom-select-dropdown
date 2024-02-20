@@ -189,6 +189,10 @@
                         setupDropdown();
                         setupEventHandlers();
                         updateDropdownText();
+
+                        $selectBox.on('change', function() {
+                        updateDropdownText();
+                    });
                     }
 
                     function setupDropdown() {
@@ -280,8 +284,7 @@
                             $listItem.siblings().removeClass('active');
                             $listItem.addClass('active');
                         }
-
-                        updateDropdownText();
+                        
                          $selectBox.trigger('change');
                     }
 
@@ -317,6 +320,12 @@
                         $selectedImages.addClass('selected-image');        
             
                         $dropdownToggle.empty().append($selectedImages, selectedText || texts.chooseOptions);
+
+                         if (!isMultiple) {
+                            var selectedIndex = $selectBox.prop('selectedIndex');
+                            $itemContainer.find('li').removeClass('active');
+                            $itemContainer.find('li').eq(selectedIndex).addClass('active');
+                        }
                     }
 
                     function getSelectedCount() {
