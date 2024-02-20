@@ -315,17 +315,16 @@
                         var selectedCount = getSelectedCount();
                         var selectedText =
                             selectedCount > countSelectedText ? selectedCount + ' ' + texts.itemSelected : getSelectedText();
-                          
-                        var $selectedImages = $dropdownMenu.find('.selected img').clone(); 
-                        $selectedImages.addClass('selected-image');        
-            
-                        $dropdownToggle.empty().append($selectedImages, selectedText || texts.chooseOptions);
-
+                                              
                          if (!isMultiple) {
                             var selectedIndex = $selectBox.prop('selectedIndex');
                             $itemContainer.find('li').removeClass('active');
                             $itemContainer.find('li').eq(selectedIndex).addClass('active');
                         }
+                          var $selectedImages = $dropdownMenu.find('.selected img').clone(); 
+                        $selectedImages.addClass('selected-image');        
+            
+                        $dropdownToggle.empty().append($selectedImages, selectedText || texts.chooseOptions);
                     }
 
                     function getSelectedCount() {
