@@ -32,7 +32,7 @@ This custom dropdown plugin is a jQuery extension designed with flexibility in m
         <option selected>Ketchup</option>
         <option selected>Relish</option>
         <option selected>Mayonnaise</option>
-        <option>Hot Sauce</option>
+        <option data-img="https://upload.wikimedia.org/wikipedia/commons/a/ac/Approve_icon.svg">Hot Sauce</option>
         <option>BBQ Sauce</option>
         <option>Soy Sauce</option>
     </select>
