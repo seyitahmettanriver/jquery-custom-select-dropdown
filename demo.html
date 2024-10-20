@@ -158,238 +158,258 @@
         }
     </style>
     <script>
-        (function($) {
-            $.fn.customSelect = function() {
-                return this.each(function() {
-                    var $selectBox = $(this);
+       (function ($) {
+    $.fn.customSelect = function () {
+        return this.each(function () {
+            var $selectBox = $(this);
 
-                    var texts = {
-                        chooseOptions: $selectBox.data('text-choose-options') || 'Choose options',
-                        noResults: $selectBox.data('text-no-results') || 'No results matched',
-                        deselectAll: $selectBox.data('text-deselect-all') || 'Deselect All',
-                        selectAll: $selectBox.data('text-select-all') || 'Select All',
-                        search: $selectBox.data('text-search') || 'Search...',
-                        itemSelected: $selectBox.data('text-items-selected') || 'items selected'
-                    };
+            var texts = {
+                chooseOptions: $selectBox.data('text-choose-options') || 'Choose options',
+                noResults: $selectBox.data('text-no-results') || 'No results matched',
+                deselectAll: $selectBox.data('text-deselect-all') || 'Deselect All',
+                selectAll: $selectBox.data('text-select-all') || 'Select All',
+                search: $selectBox.data('text-search') || 'Search...',
+                label: $selectBox.data('text-label') || 'Select Name',
+                itemSelected: $selectBox.data('text-items-selected') || 'items selected'
+            };
 
-                    var isMultiple = $selectBox.prop('multiple');
-                    var isActionsBox = $selectBox.data('actions-box') === true;
-                    var isSearch = $selectBox.data('live-search') === true;
-                    var countSelectedText = $selectBox.data('count-selected-text');
-                    var $dropdownToggle = $('<div class="custom-select-toggle"></div>');
-                    var $dropdownMenu = $('<div class="custom-select-menu"></div>');
-                    var $customSelectContainer = $('<div class="custom-select-container"></div>');
-                    var $additionalContainer = $('<div class="additional-container"></div>');
-                    var $itemContainer = $('<ul class="item-container"></ul>');
-                    var $filterContainer = $('<div class="filter-container"><input type="text" class="filter-input" placeholder="' + texts.search + '"></div>');
-                    var $actionButtons = $('<div class="action-buttons"><button class="select-all">' + texts.selectAll + '</button><button class="deselect-all">' + texts.deselectAll + '</button></div>');
-                    var $notFoundMessage = $('<div class="filter-not-found">' + texts.noResults + ' "<span class="search-keyword"></span>"</div>');
+            var isMultiple = $selectBox.prop('multiple');
+            var isActionsBox = $selectBox.data('actions-box') === true;
+            var isSearch = $selectBox.data('live-search') === true;
+            var countSelectedText = $selectBox.data('count-selected-text');
+            var $dropdownToggle = $('<div class="custom-select-toggle"></div>');
+            var $dropdownLabel = $('<label class="custom-select-label">' + texts.label + '</label>');
+            var $dropdownMenu = $('<div class="custom-select-menu"></div>');
+            var $customSelectContainer = $('<div class="custom-select-container"></div>');
+            var $additionalContainer = $('<div class="additional-container"></div>');
+            var $itemContainer = $('<ul class="item-container"></ul>');
+            var $filterContainer = $('<div class="filter-container"><input type="text" class="filter-input" placeholder="' + texts.search + '"></div>');
+            var $actionButtons = $('<div class="action-buttons"><button class="select-all">' + texts.selectAll + '</button><button class="deselect-all">' + texts.deselectAll + '</button></div>');
+            var $notFoundMessage = $('<div class="filter-not-found">' + texts.noResults + ' "<span class="search-keyword"></span>"</div>');
 
-                    function init() {
-                        setupDropdown();
-                        setupEventHandlers();
-                        updateDropdownText();
+            function init() {
+                setupDropdown();
+                setupEventHandlers();
+                updateDropdownText();
 
-                        $selectBox.on('change', function() {
-                        updateDropdownText();
+                $selectBox.on('change', function () {
+                    updateDropdownText();
+                });
+            }
+
+            function setupDropdown() {
+                $selectBox.hide();
+
+                $dropdownToggle.html(getSelectedText() || texts.chooseOptions);
+
+                $customSelectContainer.append($dropdownLabel);
+                $customSelectContainer.append($dropdownToggle, $dropdownMenu);
+                $dropdownMenu.append($additionalContainer);
+
+                if (isSearch) {
+                    $additionalContainer.append($filterContainer);
+                }
+                if (isMultiple && isActionsBox) {
+                    $additionalContainer.append($actionButtons);
+                    $actionButtons.find('.select-all, .deselect-all').show();
+                }
+
+                $selectBox.after($customSelectContainer);
+
+                buildDropdownOptions();
+            }
+
+            function buildDropdownOptions() {
+                $selectBox.find('option').each(function () {
+                    var $option = $(this);
+                    var $listItem = $('<li>' + $option.html() + '</li>');
+
+                    // Eğer data-img özelliği tanımlıysa ve değeri boş değilse
+                    if ($option.data('img') && $option.data('img').trim() !== '') {
+                        var $img = $('<img src="' + $option.data('img') + '">');
+                        var imgWidth = $option.data('img-width') ? $option.data('img-width') : '30px';
+                        var imgHeight = $option.data('img-height') ? $option.data('img-height') : '30px';
+                        $img.css({
+                            width: imgWidth,
+                            height: imgHeight
+                        });
+                        $listItem.prepend($img);
+                    }
+
+                    $listItem.on('click', function () {
+                        handleOptionClick($option, $listItem);
                     });
-                    }
 
-                    function setupDropdown() {
-                        $selectBox.hide();
-
-                        $dropdownToggle.html(getSelectedText() || texts.chooseOptions);
-
-                        $customSelectContainer.append($dropdownToggle, $dropdownMenu);
-                        $dropdownMenu.append($additionalContainer);
-
-                        if (isSearch) {
-                            $additionalContainer.append($filterContainer);
-                        }
-                        if (isMultiple && isActionsBox) {
-                            $additionalContainer.append($actionButtons);
-                            $actionButtons.find('.select-all, .deselect-all').show();
-                        }
-
-                        $selectBox.after($customSelectContainer);
-
-                        buildDropdownOptions();
-                    }
-
-                    function buildDropdownOptions() {
-                        $selectBox.find('option').each(function() {
-                            var $option = $(this);
-                            var $listItem = $('<li>' + $option.text() + '</li>');
-
-                            // Eğer data-img özelliği tanımlıysa ve değeri boş değilse
-                            if ($option.data('img') && $option.data('img').trim() !== '') {
-                                var $img = $('<img src="' + $option.data('img') + '">');
-                                $listItem.prepend($img);
-                            }
-
-                            $listItem.on('click', function() {
-                                handleOptionClick($option, $listItem);
-                            });
-
-                            if ($option.prop('selected')) {
-                                if (isMultiple) {
-                                    $listItem.addClass('selected');
-                                } else {
-                                    $listItem.addClass('active');
-                                }
-                            }
-                            $itemContainer.append($listItem);
-                            $dropdownMenu.append($itemContainer);
-                        });
-                    }
-
-
-                    function setupEventHandlers() {
-                        $filterContainer.find('.filter-input').on('input', function() {
-                            filterOptions($(this).val());
-                        });
-
-                        $actionButtons.find('.select-all').on('click', function() {
-                            selectAllOptions();
-                            updateDropdownText();
-                        });
-
-                        $actionButtons.find('.deselect-all').on('click', function() {
-                            deselectAllOptions();
-                            updateDropdownText();
-                        });
-
-                        $dropdownToggle.on('click', function() {
-                            toggleDropdownMenu();
-                        });
-
-                        $(document).on('click', function(event) {
-                            handleDocumentClick(event);
-                        });
-
-                        $dropdownToggle.on('blur', function() {
-                            clearSearchInput();
-                        });
-                    }
-
-                    function handleOptionClick($option, $listItem) {
-                        if (!isMultiple) {
-                            $dropdownMenu.hide();
-                        }
+                    if ($option.prop('selected')) {
                         if (isMultiple) {
-                            $option.prop('selected', !$option.prop('selected'));
-                            $listItem.toggleClass('selected', $option.prop('selected'));
+                            $listItem.addClass('selected');
                         } else {
-                            $selectBox.val($option.val());
-                            $listItem.siblings().removeClass('active');
                             $listItem.addClass('active');
                         }
-                        
-                         $selectBox.trigger('change');
                     }
-
-                    function handleDocumentClick(event) {
-                        if (!$dropdownToggle.is(event.target) &&
-                            !$dropdownMenu.is(event.target) &&
-                            $dropdownMenu.has(event.target).length === 0
-                        ) {
-                            $dropdownMenu.hide();
-                            clearSearchInput();
-                            filterOptions('');
-                        }
-                    }
-
-                    function toggleDropdownMenu() {
-                        $dropdownMenu.toggle();
-                        if ($filterContainer.find('.filter-input').is(':visible')) {
-                            $filterContainer.find('.filter-input').focus();
-                        }
-                    }
-
-                    function clearSearchInput() {
-                        $filterContainer.find('.filter-input').val('');
-                        filterOptions('');
-                    }
-
-                    function updateDropdownText() {
-                        var selectedCount = getSelectedCount();
-                        var selectedText =
-                            selectedCount > countSelectedText ? selectedCount + ' ' + texts.itemSelected : getSelectedText();
-                                              
-                         if (!isMultiple) {
-                            var selectedIndex = $selectBox.prop('selectedIndex');
-                            $itemContainer.find('li').removeClass('active');
-                            $itemContainer.find('li').eq(selectedIndex).addClass('active');
-                        }
-                          var $selectedImages = $dropdownMenu.find('.selected img').clone(); 
-                        $selectedImages.addClass('selected-image');        
-            
-                        $dropdownToggle.empty().append($selectedImages, selectedText || texts.chooseOptions);
-                    }
-
-                    function getSelectedCount() {
-                        return $selectBox.find('option:selected').length;
-                    }
-
-                    function filterOptions(searchTerm) {
-                        var $filteredItems = $dropdownMenu.find('li:containsi(' + searchTerm + ')');
-
-                        if ($filteredItems.length === 0 && searchTerm !== '') {
-                            $notFoundMessage.find('.search-keyword').text(searchTerm);
-                            $dropdownMenu.append($notFoundMessage);
-
-                            if (isActionsBox) {
-                                $actionButtons.hide();
-                            }
-                        } else {
-                            $notFoundMessage.remove();
-                            if (isActionsBox) {
-                                $actionButtons.show();
-                            }
-                        }
-
-                        $dropdownMenu.find('li').hide();
-                        $filteredItems.show();
-                    }
-
-                    function selectAllOptions() {
-                        $selectBox.find('option').prop('selected', true);
-                        if (isMultiple) {
-                            $dropdownMenu.find('li').addClass('selected');
-                        } else {
-                            $dropdownMenu.find('li').addClass('active');
-                        }
-                    }
-
-                    function deselectAllOptions() {
-                        $selectBox.find('option').prop('selected', false);
-                        if (isMultiple) {
-                            $dropdownMenu.find('li').removeClass('selected');
-                        } else {
-                            $dropdownMenu.find('li').removeClass('active');
-                        }
-                    }
-
-                    function getSelectedText() {
-                        var selectedOptions = $selectBox.find('option:selected');
-                        return selectedOptions
-                            .map(function() {
-                                return $(this).text();
-                            })
-                            .get()
-                            .join(', ');
-                    }
-
-                    $.expr[":"].containsi = $.expr.createPseudo(function(arg) {
-                        return function(elem) {
-                            return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
-                        };
-                    });
-
-                    init();
+                    $itemContainer.append($listItem);
+                    $dropdownMenu.append($itemContainer);
                 });
-            };
-        })(jQuery);
+            }
+
+
+            function setupEventHandlers() {
+                $filterContainer.find('.filter-input').on('input', function () {
+                    filterOptions($(this).val());
+                });
+
+                $actionButtons.find('.select-all').on('click', function () {
+                    selectAllOptions();
+                    updateDropdownText();
+                });
+
+                $actionButtons.find('.deselect-all').on('click', function () {
+                    deselectAllOptions();
+                    updateDropdownText();
+                });
+
+                $dropdownToggle.on('click', function () {
+                    toggleDropdownMenu();
+                });
+
+                $(document).on('click', function (event) {
+                    handleDocumentClick(event);
+                });
+
+                $dropdownToggle.on('blur', function () {
+                    clearSearchInput();
+                });
+            }
+
+            function handleOptionClick($option, $listItem) {
+                if (!isMultiple) {
+                    $dropdownMenu.hide();
+                }
+                if (isMultiple) {
+                    $option.prop('selected', !$option.prop('selected'));
+                    $listItem.toggleClass('selected', $option.prop('selected'));
+                } else {
+                    $selectBox.val($option.val());
+                    $listItem.siblings().removeClass('active');
+                    $listItem.addClass('active');
+                }
+
+                $selectBox.trigger('change');
+            }
+
+            function handleDocumentClick(event) {
+                if (!$dropdownToggle.is(event.target) &&
+                    !$dropdownMenu.is(event.target) &&
+                    $dropdownMenu.has(event.target).length === 0
+                ) {
+                    $customSelectContainer.removeClass('show');
+                    $dropdownMenu.hide();
+                    clearSearchInput();
+                    filterOptions('');
+                }
+            }
+
+            function toggleDropdownMenu() {
+                $dropdownMenu.toggle();
+                $customSelectContainer.toggleClass('show');
+                if ($filterContainer.find('.filter-input').is(':visible')) {
+                    $filterContainer.find('.filter-input').focus();
+                }
+            }
+
+            function clearSearchInput() {
+                $filterContainer.find('.filter-input').val('');
+                filterOptions('');
+            }
+
+            function updateDropdownText() {
+                var selectedCount = getSelectedCount();
+                var selectedText =
+                    selectedCount > countSelectedText ? selectedCount + ' ' + texts.itemSelected : getSelectedText();
+
+                if (!isMultiple) {
+                    var selectedIndex = $selectBox.prop('selectedIndex');
+                    $itemContainer.find('li').removeClass('active');
+                    $itemContainer.find('li').eq(selectedIndex).addClass('active');
+                    $customSelectContainer.removeClass('show');
+                }
+                var $selectedImages = $dropdownMenu.find('.active img').clone();
+                $selectedImages.addClass('selected-image');
+
+                if ($selectBox.data('show-selected-image') === true) {
+                    var $selectedImages = $dropdownMenu.find('.active img').clone();
+                    $selectedImages.addClass('selected-image');
+                    $dropdownToggle.empty().append($selectedImages, selectedText || texts.chooseOptions);
+                } else {
+                    $dropdownToggle.text(selectedText || texts.chooseOptions);
+                }
+            }
+
+            function getSelectedCount() {
+                return $selectBox.find('option:selected').length;
+            }
+
+            function filterOptions(searchTerm) {
+                var $filteredItems = $dropdownMenu.find('li:containsi(' + searchTerm + ')');
+
+                if ($filteredItems.length === 0 && searchTerm !== '') {
+                    $notFoundMessage.find('.search-keyword').text(searchTerm);
+                    $dropdownMenu.append($notFoundMessage);
+
+                    if (isActionsBox) {
+                        $actionButtons.hide();
+                    }
+                } else {
+                    $notFoundMessage.remove();
+                    if (isActionsBox) {
+                        $actionButtons.show();
+                    }
+                }
+
+                $dropdownMenu.find('li').hide();
+                $filteredItems.show();
+            }
+
+            function selectAllOptions() {
+                $selectBox.find('option').prop('selected', true);
+                if (isMultiple) {
+                    $dropdownMenu.find('li').addClass('selected');
+                } else {
+                    $dropdownMenu.find('li').addClass('active');
+                }
+                $selectBox.trigger('change');
+            }
+
+            function deselectAllOptions() {
+                $selectBox.find('option').prop('selected', false);
+                if (isMultiple) {
+                    $dropdownMenu.find('li').removeClass('selected');
+                } else {
+                    $dropdownMenu.find('li').removeClass('active');
+                }
+                $selectBox.trigger('change');
+            }
+
+            function getSelectedText() {
+                var selectedOptions = $selectBox.find('option:selected');
+                return selectedOptions
+                    .map(function () {
+                        return $(this).text();
+                    })
+                    .get()
+                    .join(', ');
+            }
+
+            $.expr[":"].containsi = $.expr.createPseudo(function (arg) {
+                return function (elem) {
+                    return $(elem).text().toUpperCase().indexOf(arg.toUpperCase()) >= 0;
+                };
+            });
+
+            init();
+        });
+    };
+})(jQuery);
 
         $(document).ready(function() {
             $('.selectpicker').customSelect();
@@ -399,8 +419,8 @@
 
 <body>
 
-    <select class="selectpicker" data-count-selected-text="5" data-live-search="true" data-actions-box="true" data-text-choose-options="Custom Choose Options" data-text-no-results="Custom No Results" data-text-deselect-all="Custom Deselect All" data-text-select-all="Custom Select All"
-        data-text-search="Custom Search..." data-text-items-selected="Custom items Selected" multiple>
+    <select class="selectpicker" data-show-selected-image="true" data-count-selected-text="5" data-live-search="true" data-actions-box="true" data-text-choose-options="Custom Choose Options" data-text-no-results="Custom No Results" data-text-deselect-all="Custom Deselect All" data-text-select-all="Custom Select All"
+        data-text-search="Custom Search..." data-text-items-selected="Custom items Selected" data-imgmultiple>
     <option selected>Example</option>
     <option selected>Ketchup</option>
     <option selected>Relish</option>
