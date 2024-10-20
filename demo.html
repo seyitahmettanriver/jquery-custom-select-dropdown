@@ -12,150 +12,155 @@
             background-color: #f8f9fa;
         }
 
-        .custom-select-dropdown {
-            position: relative;
-            display: inline-block;
-        }
+        .custom-select-container .custom-select-dropdown {
+    position: relative;
+    display: inline-block;
+}
+.custom-select-container .custom-select-label {
+    top: -0.5rem;
+    left: 0.8rem;
+    font-size: .75rem;
+    z-index: 10;
+    position: absolute;
+    padding: 0 0.25rem;
+    background-color: #fff;
+    color: #5f6368;
+    transition: 150ms cubic-bezier(0.4,0,0.2,1);
+    pointer-events: none;
+}
+.custom-select-container .custom-select-toggle {
+    cursor: pointer;
+    background-color: #fff;
+    color: #5f6368;
+    width: auto;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    position: relative;
+    height: 42px;
+    padding: 0.5rem 1rem;
+    border: 1.5px solid #dadce0;
+    border-radius: 1.5rem;
+}
+.custom-select-container .custom-select-toggle .selected-image {
+    margin-right: 10px;
+    pointer-events: none;
+}
+.custom-select-container .custom-select-menu {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 0.5rem 0;
+    z-index: 1000;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1.5px solid #dadce0;
+    border-radius: 0 0 1.5rem 1.5rem;
+    border-top: 0;
+    overflow: hidden;
+}
+.custom-select-container .custom-select-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.custom-select-container .custom-select-menu li {
+    padding: 0.25rem 1rem;
+    cursor: pointer;
+    display: block;
+    list-style: none;
+    user-select: none;
+    position: relative;
+}
+.custom-select-container .custom-select-menu li:hover {
+    background-color: #f9fbff;
+}
+.custom-select-container .custom-select-menu li {
+    display: flex;
+    align-items: center;
+    padding: 0.25rem 1rem;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+    position: relative;
+}
+.custom-select-container .custom-select-menu li img {
+    width: 30px;
+    height: 30px;
+    margin-right: 10px;
+    border-radius: 50%;
+}
+.custom-select-container .custom-select-menu li:hover {
+    background-color: #e9ecef;
+}
+.custom-select-container .custom-select-menu li.active {
+    color: #fff;
+    text-decoration: none;
+    background-color: #35c10d;
+}
+.custom-select-container .filter-container {
+    padding: 4px 8px;
+}
+.custom-select-container .filter-container .filter-input {
+    font-size: .95rem;
+    width: 100%;
+    box-sizing: border-box;
+    border-radius: 4px;
+    height: 35px;
+    margin-bottom: .3rem;
+    color: #5f6368;
+    position: relative;
+    padding: 0.5rem;
+    border: 1.5px solid #dadce0;
+}
+.custom-select-container .action-buttons {
+    display: flex;
+    justify-content: space-between;
+    padding: 4px 8px;
+    gap: 5px;
+}
+.custom-select-container .action-buttons button {
+    cursor: pointer;
+    border: none;
+    padding: 0.25rem 0.5rem;
+    font-size: .875rem;
+    line-height: 1.5;
+    border-radius: 0.2rem;
+    flex: 1;
+}
+.custom-select-container {
+    position: relative;
+    user-select: none;
+}
+.custom-select-container.show .custom-select-toggle {
+    border: 1.5px solid #35C10D;
+    border-radius: 1.5rem 1.5rem 0 0;
+}
+.custom-select-container.show .custom-select-label {
+    color: #35C10D;
+}
+.custom-select-container .filter-not-found {
+    padding: 3px;
+    background: #f5f5f5;
+    margin: 0 5px;
+    white-space: nowrap;
+}
+.custom-select-container .selected:after {
+    content: '';
+    width: 0.5em;
+    height: 1em;
+    border-style: solid;
+    border-width: 0 0.26em 0.26em 0;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg) scale(0.75);
+    -o-transform: rotate(45deg) scale(0.75);
+    transform: rotate(45deg) scale(0.75);
+    position: absolute;
+    right: 16px;
+    color: #35c10d;
+}
 
-        .custom-select-toggle {
-            cursor: pointer;
-            border: 1px solid #ccc;
-            padding: 8px 16px;
-            background-color: #fff;
-            border-radius: 4px;
-            color: #212529;
-            width: auto;
-            box-sizing: border-box;
-            display: flex; 
-            align-items: center; 
-            position: relative; 
-        }
-        .custom-select-toggle .selected-image {
-            margin-right: 10px;
-        }
-        .custom-select-menu {
-            display: none;
-            position: absolute;
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            border: 1px solid #ccc;
-            padding: 0.5rem 0;
-            z-index: 1000;
-            border-radius: 4px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-
-        .custom-select-toggle:hover {
-            background-color: #e9ecef;
-        }
-
-        .custom-select-menu ul {
-            list-style: none;
-            margin: 0;
-            padding: 0;
-        }
-
-        .custom-select-menu li {
-            padding: 0.25rem 1rem;
-            cursor: pointer;
-            display: block;
-            list-style: none;
-            user-select: none;
-            position: relative;
-        }
-
-        .custom-select-menu li:hover {
-            background-color: #e9ecef;
-        }
-
-        .custom-select-menu li {
-            display: flex;
-            align-items: center;
-            /* Öğeleri dikeyde hizalar */
-            padding: 0.25rem 1rem;
-            cursor: pointer;
-            list-style: none;
-            user-select: none;
-            position: relative;
-        }
-
-        .custom-select-menu li img {
-            width: 30px;
-            /* Resmin genişliği */
-            height: 30px;
-            /* Resmin yüksekliği */
-            margin-right: 10px;
-            /* Resmin sağ taraftan boşluk bırakması */
-            border-radius: 50%;
-            /* Yuvarlatılmış kenarlar */
-        }
-
-        .custom-select-menu li:hover {
-            background-color: #e9ecef;
-            /* Fare üzerine gelindiğinde arkaplan rengi */
-        }
-
-        .custom-select-menu li.active {
-            color: #fff;
-            text-decoration: none;
-            background-color: #007bff;
-        }
-
-        .filter-container {
-            padding: 4px 8px;
-        }
-
-        .filter-container .filter-input {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .action-buttons {
-            display: flex;
-            justify-content: space-between;
-            padding: 4px 8px;
-            gap: 5px;
-        }
-
-        .action-buttons button {
-            cursor: pointer;
-            border: none;
-            padding: 0.25rem 0.5rem;
-            font-size: .875rem;
-            line-height: 1.5;
-            border-radius: 0.2rem;
-            flex: 1;
-        }
-
-        .custom-select-container {
-            width: 500px;
-            position: relative;
-        }
-
-        .filter-not-found {
-            padding: 3px;
-            background: #f5f5f5;
-            margin: 0 5px;
-            white-space: nowrap;
-        }
-
-        .selected:after {
-            content: '';
-            width: 0.5em;
-            height: 1em;
-            border-style: solid;
-            border-width: 0 0.26em 0.26em 0;
-            -webkit-transform: rotate(45deg);
-            -ms-transform: rotate(45deg) scale(0.75);
-            -o-transform: rotate(45deg) scale(0.75);
-            transform: rotate(45deg) scale(0.75);
-            position: absolute;
-            right: 16px;
-        }
     </style>
     <script>
        (function ($) {
@@ -418,15 +423,21 @@
 </head>
 
 <body>
-
-    <select class="selectpicker" data-show-selected-image="true" data-count-selected-text="5" data-live-search="true" data-actions-box="true" data-text-choose-options="Custom Choose Options" data-text-no-results="Custom No Results" data-text-deselect-all="Custom Deselect All" data-text-select-all="Custom Select All"
-        data-text-search="Custom Search..." data-text-items-selected="Custom items Selected" data-imgmultiple>
+<select class="selectpicker" data-count-selected-text="5" data-live-search="true" data-actions-box="true"
+        data-text-choose-options="Custom Choose Options"
+        data-text-no-results="Custom No Results"
+        data-text-deselect-all="Custom Deselect All"
+        data-text-select-all="Custom Select All"
+        data-text-search="Custom Search..."
+        data-text-items-selected="Custom items Selected"
+        data-show-selected-image="true"
+        multiple>
     <option selected>Example</option>
     <option selected>Ketchup</option>
     <option selected>Relish</option>
     <option selected>Mayonnaise</option>
-    <option data-img="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Flag_of_Cuba.svg/800px-Flag_of_Cuba.svg.png">Hot Sauce</option>
-    <option data-img="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/Flag_of_Cuba.svg/800px-Flag_of_Cuba.svg.png">BBQ Sauce</option>
+    <option data-img="https://upload.wikimedia.org/wikipedia/commons/a/ac/Approve_icon.svg" data-img-width="30px" data-img-height="30px">Hot Sauce</option>
+    <option>BBQ Sauce</option>
     <option>Soy Sauce</option>
 </select>
 
